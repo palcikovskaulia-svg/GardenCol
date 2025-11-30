@@ -1,0 +1,64 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block title %}Кошик{% endblock %}
+
+{% block content %}
+<h2>🛒 Ваш Кошик</h2>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box-element">
+            <a  class="btn btn-outline-dark mb-3" href="{% url 'store' %}">&#x2190; Продовжити покупки</a>
+            <br>
+            <table class="table">
+                <tr>
+                    <th><h5>Товар</h5></th>
+                    <th><h5>Ціна</h5></th>
+                    <th><h5>Кількість</h5></th>
+                    <th><h5>Всього</h5></th>
+                </tr>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.imageURL }}" class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                            {% else %}
+                                
+                            {% endif %}
+                            <span>{{ item.product.name }}</span>
+                        </div>
+                    </td>
+                    <td>${{ item.product.price|floatformat:2 }}</td>
+                    <td>
+                        <p class="quantity">{{ item.quantity }}</p>
+                        <div class="quantity-controls">
+                            <i data-product="{{ item.product.id }}" data-action="add" class="fa-solid fa-square-plus update-cart" style="cursor: pointer; color: #4CAF50; font-size: 1.5rem;"></i>
+                            <i data-product="{{ item.product.id }}" data-action="remove" class="fa-solid fa-square-minus update-cart" style="cursor: pointer; color: #E57373; font-size: 1.5rem;"></i>
+                        </div>
+                    </td>
+                    <td>${{ item.get_total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-6 offset-lg-6">
+        <div class="box-element p-4 shadow-sm bg-light">
+            <div class="d-flex justify-content-between">
+                <strong>Кількість товарів:</strong>
+                <span>{{ cart_items }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <strong>Загальна сума:</strong>
+                <span class="text-success fs-4">${{ cart_total|floatformat:2 }}</span>
+            </div>
+            <a href="{% url 'checkout' %}" class="btn btn-success w-100">Оформити замовлення</a>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,70 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% load store_extras %}
+{% block title %}Каталог Товарів{% endblock %}
+
+{% block content %}
+<div class="row mt-4 catalog-page">
+    <div class="col-12 mb-3 d-lg-none">
+        <h3 class="text-center text-success">
+            {% if current_category %}
+                {{ categories|get_category_name:current_category }}
+            {% else %}
+                Усі Товари
+            {% endif %}
+        </h3>
+    </div>
+
+    <div class="col-lg-3 col-md-4 mt-4">
+        <div class="box-element p-3 sticky-top" style="top: 80px;">
+            <h5 class="text-success mb-3">Секції Каталогу</h5>
+            <ul class="list-unstyled">
+
+                <li>
+                    <a href="{% url 'store' %}" class="btn {% if not current_category %}btn-success{% else %}btn-outline-secondary{% endif %} w-100 mb-2">
+                        Усі товари
+                    </a>
+                </li>
+
+                {% for slug, name in categories %}
+                    <li>
+                        <a href="{% url 'store' %}?category={{ slug }}"
+                           class="btn {% if current_category == slug %}btn-success{% else %}btn-outline-secondary{% endif %} w-100 mb-2">
+                            {{ name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-9 col-md-8">
+        <h2>
+            Каталог:
+            {% if current_category %}
+                {{ categories|get_category_name:current_category }}
+            {% else %}
+                Усі Товари
+            {% endif %}
+        </h2>
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card" data-id="{{ product.id }}" data-full-description="{{ product.description }}">
+                <img class="card-img-top" src="{% if product.image %} {{ product.image.url }} {% else %} https://via.placeholder.com/300x200?text={{ product.name }} {% endif %}" alt="{{ product.name }}">
+
+                <div class="card-body">
+                    <h4 class="card-title">{{ product.name }}</h4>
+                    <p class="card-text text-muted">{{ product.description }}</p>
+                    <div class="card-footer">
+                        <span class="price">{{ product.price|floatformat:2 }} ₴</span>
+                        <button class="btn btn-sm btn-success update-cart" data-product="{{ product.id }}" data-action="add">Додати в кошик</button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p class="alert alert-info mt-5">Товарів у цій категорії поки немає.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

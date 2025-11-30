@@ -1,0 +1,83 @@
+
+{% extends 'store/main.html' %}
+{% load static %}
+{% block title %}Головна сторінка{% endblock %}
+
+{% block content %}
+
+    <section id="home" class="hero hero-full"
+        style="background-image: url('{% static 'store/img/hero-bg.jpg' %}');">
+
+        <div class="container">
+            <h2>Зелений Куточок для Вашого Дому</h2>
+            <p>Найкращий вибір рослин, саджанців та добрив. Почніть свій сад із GardenCol!</p>
+            <a href="{% url 'store' %}" class="btn btn-success">Переглянути Каталог</a>
+        </div>
+    </section>
+
+    <section class="section reasons-section">
+        <div class="container">
+            <h3 class="section-title">🌿 Переваги GardenCol</h3>
+            <div class="row text-center">
+                <div class="col-md-4 mb-4">
+                    <div class="box-element p-4 feature-card">
+                        <i class="fas fa-seedling fa-3x text-success mb-3"></i>
+                        <h4>Екологічна чистота</h4>
+                        <p class="text-muted">Лише натуральні добрива та гарантія приживлюваності.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="box-element p-4 feature-card">
+                        <i class="fas fa-shipping-fast fa-3x text-success mb-3"></i>
+                        <h4>Швидка доставка</h4>
+                        <p class="text-muted">Доставляємо рослини цілими по всій Україні за 24 години.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="box-element p-4 feature-card">
+                        <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                        <h4>Повний асортимент</h4>
+                        <p class="text-muted">Від екзотичних кімнатних до рідкісних плодових культур.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background-color: #f0fff0;">
+        <div class="container">
+            <h3 class="section-title">✨ Нові Надходження</h3>
+            <div class="product-grid">
+                {% for product in latest_products %}
+                <div class="product-card" data-id="{{ product.id }}">
+                    <img class="card-img-top" src="{% if product.image %} {{ product.image.url }} {% else %} https://via.placeholder.com/300x220?text={{ product.name|slice:":12" }} {% endif %}" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ product.name }}</h4>
+                        <p class="card-text text-muted">{{ product.description|slice:":50" }}...</p>
+                        <div class="card-footer">
+                            <span class="price">{{ product.price|floatformat:2 }} ₴</span>
+                            <button class="btn btn-sm btn-success update-cart" data-product="{{ product.id }}" data-action="add">Додати в кошик</button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="alert alert-info">Схоже, нових надходжень поки немає. Додайте товари через /admin</p>
+                {% endfor %}
+            </div>
+            <div class="text-center mt-5">
+                <a href="{% url 'store' %}" class="btn btn-success">Переглянути весь каталог</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section contact" id="about-short">
+        <div class="container" style="max-width: 900px;">
+            <h3 class="section-title">🌍 Спільнота Садівників</h3>
+            <p style="font-size: 1.1em; text-align: center; margin-bottom: 30px;">Ми — більше, ніж просто магазин. Ми — спільнота, яка прагне ділитися знаннями та любов'ю до природи. У нашому блозі ви знайдете поради від експертів, а в каталозі — лише здорові та якісні рослини.</p>
+            <div class="text-center">
+                <a href="{% url 'blog' %}" class="btn btn-success">Відкрити Блог</a>
+                <a href="{% url 'about' %}" class="btn btn-outline-dark">Про Компанію</a>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

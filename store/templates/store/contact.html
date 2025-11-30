@@ -1,0 +1,47 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block title %}Контакти{% endblock %}
+{% block content %}
+    <section class="section container">
+        <h3 class="section-title">💖 Зв'яжіться з Нами</h3>
+
+        <div class="row">
+    <!-- Ліва колонка - Інформація -->
+    <div class="col-lg-6 mb-4">
+        <div class="contact-info-card">
+            <h4>🗺️ Наша адреса</h4>
+            <p>вул. Садова, 15, м. Тернопіль, Україна</p>
+            <p>Графік роботи: **Пн-ПТ 9:00 - 18:00**</p>
+            <p>Сб-Нд: За домовленістю</p>
+
+            <h4 style="margin-top: 32px;">📞 Зворотний зв'язок</h4>
+            <p>Телефон: <a href="tel:+380971234567">+38 (097) 123-45-67</a></p>
+            <p>Email: <a href="mailto:info@gardencol.ua">info@gardencol.ua</a></p>
+        </div>
+    </div>
+
+    <!-- Права колонка - Форма -->
+    <div class="col-lg-6 mb-4">
+        <div class="contact-form-card">
+            <h4>📧 Напишіть нам</h4>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="name" class="form-input mb-3" placeholder="Ваше ім'я" required>
+                <input type="email" name="email" class="form-input mb-3" placeholder="Ваш Email" required>
+                <textarea name="message" class="form-input mb-3" placeholder="Ваше повідомлення" required></textarea>
+                <button type="submit" class="btn btn-success w-100">Надіслати</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="box-element p-4" style="height: 300px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                    <h4>📍 Тут буде інтерактивна карта Google Maps</h4>
+                </div>
+            </div>
+        </div>
+
+    </section>
+{% endblock content %}

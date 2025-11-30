@@ -1,0 +1,68 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block title %}Оформлення замовлення{% endblock %}
+
+{% block content %}
+<h2>🔒 Оформлення Замовлення</h2>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="box-element p-4 shadow-sm">
+            <h5>Контактні дані</h5>
+            <hr>
+            <form id="shipping-form">
+                <div class="mb-3">
+                    <input class="form-control" type="text" id="name" required placeholder="Ім'я та Прізвище">
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="email" id="email" required placeholder="Email">
+                </div>
+
+                <hr>
+                <h5>Адреса Доставки</h5>
+                <div class="mb-3">
+                    <input class="form-control" type="text" id="city" required placeholder="Місто">
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="text" id="address" required placeholder="Вулиця та номер будинку">
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="text" id="zipcode" required placeholder="Поштовий індекс">
+                </div>
+                
+                <hr>
+                <div class="d-grid">
+                    <button type="submit" id="form-button" class="btn btn-success">Підтвердити замовлення</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="box-element p-4 shadow-sm">
+            <h5>Огляд Замовлення</h5>
+            <hr>
+            {% for item in items %}
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center">
+                    <span class="me-3">{{ item.product.name }}</span>
+                </div>
+                <span class="text-end">
+                    Кіл.: {{ item.quantity }} x ${{ item.product.price|floatformat:2 }} = **${{ item.get_total|floatformat:2 }}**
+                </span>
+            </div>
+            {% endfor %}
+
+            <hr>
+            <div class="d-flex justify-content-between fs-5 fw-bold">
+                <p>Всього товарів:</p>
+                <p>{{ cart_items }}</p>
+            </div>
+            <div class="d-flex justify-content-between fs-4 fw-bold text-success">
+                <p>Загальна сума:</p>
+                <p>${{ cart_total|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
