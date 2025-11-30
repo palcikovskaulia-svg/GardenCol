@@ -1,5 +1,5 @@
 from django.db import models
-
+from cloudinary.models import CloudinaryField
 
 class Product(models.Model):
     # Категорії
@@ -14,20 +14,20 @@ class Product(models.Model):
     name = models.CharField(max_length=200, null=False)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    image = CloudinaryField('image', null=True, blank=True)
 
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='indoor')
 
     def __str__(self):
         return self.name
 
+
     @property
     def imageURL(self):
-        try:
-            url = self.image.url
-        except:
-            url = ''
-        return url
+            # CloudinaryField має метод URL, який повертає потрібну адресу
+            if self.image and hasattr(self.image, 'url'):
+                return self.image.url
+            return ''
 
 
 class Order(models.Model):

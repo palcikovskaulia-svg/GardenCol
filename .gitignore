@@ -13,3 +13,5 @@ db.sqlite3
 
 # IDE (PyCharm)
 .idea/
+
+.env
