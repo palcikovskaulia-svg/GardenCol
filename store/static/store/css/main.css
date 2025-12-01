@@ -732,34 +732,52 @@ textarea.form-input {
 }
 
 /* =========================================================
-   7. КНОПКА ШВИДКОГО ЗВ'ЯЗКУ (FLOATING CONTACT BUTTON)
+   7. ГРУПА ПЛАВАЮЧИХ КНОПОК ЗВ'ЯЗКУ
    ========================================================= */
 
-.floating-contact-btn {
-    /* Фіксоване позиціонування */
+.floating-contact-group {
     position: fixed;
-    bottom: 30px; /* Відступ від низу */
-    right: 30px; /* Відступ справа */
-    z-index: 900; /* Переконайтеся, що кнопка знаходиться над іншими елементами */
+    bottom: 30px;
+    right: 30px;
+    z-index: 900;
+    display: flex;
+    flex-direction: column; /* Розташування вертикально */
+    gap: 10px; /* Відстань між кнопками */
+}
 
-    /* Стилізація */
-    background-color: #2e7d32; /* Глибокий зелений */
+.floating-btn {
+    /* Базові стилі */
     color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%; /* Кругла форма */
+    width: 55px; /* Трохи менший розмір */
+    height: 55px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-
-    /* Анімація та тінь */
+    font-size: 1.4rem;
+    text-decoration: none;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
 }
 
-.floating-contact-btn:hover {
-    background-color: #1b5e20; /* Темніший колір при наведенні */
-    transform: scale(1.1) rotate(5deg); /* Легке збільшення та обертання */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+.floating-btn:hover {
+    transform: scale(1.1); /* Збільшення при наведенні */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* --- КОЛЬОРИ МЕСЕНДЖЕРІВ --- */
+
+/* Телефон (Основний зелений) */
+.phone-btn {
+    background-color: #2e7d32;
+}
+
+/* Telegram (Синій) */
+.telegram-btn {
+    background-color: #0088CC;
+}
+
+/* Viber (Фіолетовий) */
+.viber-btn {
+    background-color: #7360F2;
 }
