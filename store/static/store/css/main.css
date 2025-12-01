@@ -1,6 +1,8 @@
 /* =========================================================
-   1. BASE & TYPOGRAPHY
+   MODERN GARDENCOL STYLES - 2024/2025
    ========================================================= */
+
+/* === 1. BASE & TYPOGRAPHY === */
 :root {
     --primary-green: #2d6a4f;
     --secondary-green: #52b788;
@@ -42,9 +44,7 @@ body {
     padding: 0 24px;
 }
 
-/* =========================================================
-   2. BUTTONS & INTERACTIONS
-   ========================================================= */
+/* === 2. BUTTONS & INTERACTIONS === */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -103,25 +103,21 @@ body {
     transform: translateY(-2px);
 }
 
-/* =========================================================
-   3. HEADER (ФІКСОВАНИЙ / ПРОЗОРИЙ)
-   ========================================================= */
-
+/* === 3. HEADER === */
 .header {
     position: fixed;
-    z-index: 2000;
     top: 0;
     left: 0;
     right: 0;
+    z-index: 1000;
     padding: 20px 0;
     transition: var(--transition);
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: none;
-    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+    box-shadow: 0 2px 16px rgba(45, 106, 79, 0.2);
 }
 
 .header-transparent {
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
 }
 
 .header-scrolled {
@@ -135,10 +131,17 @@ body {
     align-items: center;
 }
 
-.header-logo {
-    height: 40px;
-    width: auto;
+.logo a {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+    text-decoration: none;
     transition: var(--transition);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-transparent .logo a {
+    color: white;
 }
 
 .nav ul {
@@ -173,11 +176,23 @@ body {
     width: 100%;
 }
 
+.header-transparent .nav ul li a {
+    color: white;
+}
+
 .cart-icon {
     position: relative;
     color: white;
     font-size: 1.4rem;
     transition: var(--transition);
+}
+
+.header-transparent .cart-icon {
+    color: white;
+}
+
+.cart-icon:hover {
+    transform: scale(1.1);
 }
 
 .badge {
@@ -195,54 +210,18 @@ body {
     font-size: 0.7rem;
     font-weight: 700;
 }
-/* --- СТИЛІ ДЛЯ ФОРМИ ПОШУКУ --- */
-.search-form {
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 5px 5px 5px 15px;
-    margin: 0 24px;
-    flex-grow: 1;
-    max-width: 300px;
-}
-
-.search-input {
-    background: none;
-    border: none;
-    padding: 8px 0;
-    color: white;
-    font-size: 0.95em;
-    width: 100%;
-}
-
-.search-input::placeholder {
-    color: rgba(255, 255, 255, 0.8);
-}
-.search-form:focus-within .search-input {
-    color: var(--text-dark);
-}
-
-.search-form:focus-within {
-    background-color: var(--white);
-    box-shadow: 0 0 0 2px var(--secondary-green);
-}
-
-.search-button {
-    background-color: transparent;
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    cursor: pointer;
-}
-.search-form:focus-within .search-button {
-    color: var(--primary-green);
-}
 
 /* Dropdown */
 .dropdown {
     position: relative;
+}
+
+.dropbtn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
 }
 
 .dropdown-content {
@@ -279,6 +258,7 @@ body {
     display: block;
     padding: 12px 24px;
     color: var(--text-dark);
+    text-decoration: none;
     transition: var(--transition);
     font-weight: 500;
 }
@@ -289,9 +269,7 @@ body {
     padding-left: 28px;
 }
 
-/* =========================================================
-   4. HERO SECTION
-   ========================================================= */
+/* === 4. HERO SECTION === */
 .hero {
     min-height: 100vh;
     width: 100vw;
@@ -304,6 +282,7 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    background-image: url('https://images.unsplash.com/photo-1466781783364-36c955e42a7f?q=80&w=2071&auto=format&fit=crop');
     padding: 0;
     margin-top: 0;
 }
@@ -320,6 +299,17 @@ body {
     z-index: 1;
 }
 
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 50%,
+        rgba(82, 183, 136, 0.15) 0%,
+        transparent 60%
+    );
+    z-index: 1;
+}
+
 .hero .container {
     position: relative;
     z-index: 2;
@@ -329,19 +319,46 @@ body {
     animation: fadeInUp 1s ease;
 }
 
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .hero h2 {
     font-size: clamp(2.5rem, 8vw, 5.5rem);
     font-weight: 900;
     color: white;
     margin-bottom: 24px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* =========================================================
-   5. SECTIONS / ЗАГАЛЬНІ БЛОКИ
-   ========================================================= */
+.hero p {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 40px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.hero .btn-success {
+    padding: 18px 48px;
+    font-size: 1.1rem;
+    margin-top: 16px;
+}
+
+/* === 5. SECTIONS === */
 .section {
-    padding: 80px 0;
+    padding: 100px 0;
 }
 
 .section-title {
@@ -370,68 +387,87 @@ body {
     border-radius: 2px;
 }
 
-/* =========================================================
-   6. PRODUCT GRID (ФІКСАЦІЯ)
-   ========================================================= */
+/* === 6. PRODUCT GRID === */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 32px;
-    grid-auto-rows: 1fr;
-    align-items: stretch;
 }
 
 .product-card {
     background: white;
     border-radius: var(--radius-lg);
+    overflow: hidden;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     display: flex;
     flex-direction: column;
     height: 100%;
     position: relative;
+}
+
+/* ГОЛОВНА СТОРІНКА - описи сховані за замовчуванням */
+.product-card .card-text {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    flex-grow: 1;
+    line-height: 1.6;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+/* ГОЛОВНА СТОРІНКА - показати опис при hover */
+.product-card:hover .card-text {
+    max-height: 300px;
+    opacity: 1;
+    margin-top: 12px;
+}
+
+/* КАТАЛОГ - завжди показувати скорочений опис */
+.catalog-page .product-card .card-text {
+    max-height: 60px;
+    opacity: 1;
+    margin-top: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* КАТАЛОГ - показати ПОВНИЙ опис при hover */
+.catalog-page .product-card:hover .card-text {
+    max-height: 1000px;
     overflow: visible;
-    z-index: 10;
+    -webkit-line-clamp: unset;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    padding: 2px;
+    background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: var(--transition);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .product-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
     z-index: 50;
+    overflow: visible;
 }
 
-/* --- ТУЛТІП (СПЛИВАЮЧИЙ ОПИС) --- */
-.product-tooltip {
-    position: absolute;
-    top: 50%;
-    left: 105%;
-    z-index: 1000;
-
-    background-color: var(--dark);
-    color: var(--white);
-    padding: 15px;
-    border-radius: var(--radius-sm);
-    max-width: 300px;
-    box-shadow: var(--shadow-lg);
-
-    /* КЛЮЧ: Приховування та анімація */
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(10px) translateY(-50%);
-    transition: all 0.3s ease-in-out;
-}
-
-.product-tooltip .tooltip-title {
-    font-weight: 700;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-/* КЛЮЧ: Відображати Tooltip при наведенні на картку */
-.product-card:hover .product-tooltip {
+.product-card:hover::before {
     opacity: 1;
-    visibility: visible;
-    transform: translateX(0) translateY(-50%);
 }
 
 .card-img-top {
@@ -443,7 +479,7 @@ body {
 }
 
 .product-card:hover .card-img-top {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .card-body {
@@ -458,19 +494,6 @@ body {
     font-weight: 700;
     color: var(--primary-green);
     margin-bottom: 12px;
-}
-
-/* --- ОПИС ТА ОБРІЗАННЯ --- */
-.card-text {
-    color: var(--text-muted);
-    margin-bottom: 15px;
-    flex-grow: 1;
-    /* КЛЮЧ: Обмеження кількості рядків */
-    max-height: 60px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
 }
 
 .card-footer {
@@ -526,6 +549,10 @@ body {
     color: var(--secondary-green) !important;
 }
 
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
 /* === 8. UTILITIES === */
 .box-element {
     background: white;
@@ -533,8 +560,6 @@ body {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
-    position: relative;
-    z-index: 10;
 }
 
 .reasons-section {
@@ -672,49 +697,51 @@ textarea.form-input {
         transform: translateY(0);
     }
 }
-
 /* =========================================================
-   11. ГРУПА ПЛАВАЮЧИХ КНОПОК ЗВ'ЯЗКУ
+   11. TOOLTIP (СПЛИВАЮЧИЙ ОПИС)
    ========================================================= */
 
-.floating-contact-group {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 900;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+/* Забезпечуємо, що Tooltip може з'являтися над іншими елементами */
+.product-card {
+    position: relative;
+    overflow: visible;
+    z-index: 10;
+}
+.product-card:hover {
+    z-index: 50; /* Піднімаємо активну картку вище сусідів */
 }
 
-.floating-btn {
-    color: white;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+.product-tooltip {
+    position: absolute;
+    top: 50%;
+    left: 105%; /* Розташування праворуч від картки */
+    z-index: 1000;
+
+    /* Дизайн */
+    background-color: var(--dark);
+    color: var(--white);
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    max-width: 300px;
+    box-shadow: var(--shadow-lg);
+
+    /* КЛЮЧ: Приховування та анімація */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(10px) translateY(-50%);
+    transition: all 0.3s ease-in-out;
 }
 
-.floating-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+.product-tooltip .tooltip-title {
+    font-weight: 700;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* --- КОЛЬОРИ МЕСЕНДЖЕРІВ --- */
-.phone-btn {
-    background-color: #2e7d32;
+/* КЛЮЧ: Відображати Tooltip при наведенні на картку */
+.product-card:hover .product-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0) translateY(-50%);
 }
 
-.telegram-btn {
-    background-color: #0088CC;
-}
-
-.viber-btn {
-    background-color: #7360F2;
-}
