@@ -10,12 +10,7 @@ urlpatterns = [
     path('about/', views.about, name="about"),
     path('contact/', views.contact, name="contact"),
 
-    # ----------------------------------------------------
-    # ФУНКЦІОНАЛ БЛОГУ (ВИПРАВЛЕНО)
-    # ----------------------------------------------------
-    path('blog/', views.blog_list, name="blog_list"), # Список статей
-    path('blog/<slug:post_slug>/', views.blog_detail, name="blog_detail"), # Деталізація статті
-
+    path('blog/', views.blog, name="blog"),
 
     # ----------------------------------------------------
     # ФУНКЦІОНАЛЬНІ МАРШРУТИ КОШИКА
