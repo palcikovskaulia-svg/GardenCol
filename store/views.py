@@ -106,24 +106,31 @@ def checkout(request):
     if request.method == 'POST':
         data = request.POST
 
-        # Перевірка, щоб не обробляти порожній кошик
+        # Перевірка: Якщо кошик порожній, повертаємось на каталог
         if cart_items == 0:
             return redirect('store')
 
-            # 1. Завершення замовлення (Order)
+        # === ЛОГІКА ОФОРМЛЕННЯ ЗАМОВЛЕННЯ (ВИКОНУЄТЬСЯ, ЯКЩО CART_ITEMS > 0) ===
+
+        # 1. Завершення замовлення (Order)
         order.complete = True
         order.save()
 
         # 2. Створення адреси доставки
-        ShippingAddress.objects.create(
-            order=order,
-            # Використовуйте імена полів з вашої форми checkout.html:
-            address=data['address'],
-            city=data['city'],
-            # state - часто не використовується в Україні, можна замінити на 'region' або залишити
-            state=data.get('state', ''),
-            zipcode=data['zipcode'],
-        )
+        try:
+            ShippingAddress.objects.create(
+                order=order,
+                address=data.get('address', ''),
+                city=data.get('city', ''),
+                # Тепер поле 'state' у вас є в HTML
+                state=data.get('state', ''),
+                zipcode=data.get('zipcode', ''),
+            )
+        except Exception as e:
+            # Якщо виникла помилка під час збереження адреси, логуємо її
+            print(f"Error creating shipping address: {e}")
+            # Можна повернути помилку, або відкотити order.complete = False
+            return render(request, 'store/error.html', {'message': 'Помилка збереження адреси'})
 
         # 3. Перенаправлення на сторінку підтвердження
         return redirect('checkout_success', order_id=order.id)
