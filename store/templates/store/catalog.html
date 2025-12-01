@@ -1,5 +1,6 @@
 {% extends 'store/main.html' %}
 {% load static %}
+{% load store_extras %}
 {% block title %}Каталог Товарів{% endblock %}
 
 {% block content %}
@@ -7,7 +8,7 @@
     <div class="col-12 mb-3 d-lg-none">
         <h3 class="text-center text-success">
             {% if current_category %}
-                Категорія
+                {{ categories|get_category_name:current_category }}
             {% else %}
                 Усі Товари
             {% endif %}
@@ -15,73 +16,111 @@
     </div>
 
     <div class="col-lg-3 col-md-4 mt-4">
+
         <div class="box-element p-3 mb-4">
             <h5 class="text-success mb-3">💰 Фільтр за Ціною</h5>
             <form method="GET" action="{% url 'store' %}">
-                <input type="hidden" name="category" value="{{ current_category }}">
-                <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                {% csrf_token %}
+
+                <input type="hidden" name="category" value="{{ current_category|default:'' }}">
+                <input type="hidden" name="q" value="{{ search_query|default:'' }}">
+                <input type="hidden" name="sort_by" value="{{ sort_by|default:'-id' }}">
+
+
                 <div class="mb-3">
-                    <label class="form-label small text-muted">Мін. ціна</label>
-                    <input type="number" name="price_min" class="form-control" value="{{ price_min }}" placeholder="50" min="0">
+                    <label class="form-label small text-muted">Мін. ціна (₴)</label>
+                    <input type="number" name="price_min" class="form-control"
+                           value="{{ price_min|default:'' }}" placeholder="Наприклад, 50" min="0">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label small text-muted">Макс. ціна</label>
-                    <input type="number" name="price_max" class="form-control" value="{{ price_max }}" placeholder="1000" min="0">
+                    <label class="form-label small text-muted">Макс. ціна (₴)</label>
+                    <input type="number" name="price_max" class="form-control"
+                           value="{{ price_max|default:'' }}" placeholder="Наприклад, 1000" min="0">
                 </div>
                 <button type="submit" class="btn btn-success w-100">Застосувати</button>
                 <a href="{% url 'store' %}" class="btn btn-outline-secondary w-100 mt-2">Скинути</a>
             </form>
         </div>
 
-        <div class="box-element p-3 sticky-top" style="top: 100px;">
+
+        <div class="box-element p-3 sticky-top categories-box" style="top: 100px;">
             <h5 class="text-success mb-3">📂 Категорії</h5>
             <ul class="list-unstyled">
+
                 <li>
-                    <a href="{% url 'store' %}" class="btn w-100 mb-2 btn-success">Усі товари</a>
+                    <a href="{% url 'store' %}" class="btn {% if not current_category %}btn-success{% else %}btn-outline-secondary{% endif %} w-100 mb-2">
+                        Усі товари
+                    </a>
                 </li>
-                <li>
-                    <a href="{% url 'store' %}?category=indoor" class="btn btn-outline-secondary w-100 mb-2">Кімнатні рослини</a>
-                </li>
-                <li>
-                    <a href="{% url 'store' %}?category=outdoor" class="btn btn-outline-secondary w-100 mb-2">Садові рослини</a>
-                </li>
+
+                {% for slug, name in categories %}
+                    <li>
+                        <a href="{% url 'store' %}?category={{ slug }}"
+                           class="btn {% if current_category == slug %}btn-success{% else %}btn-outline-secondary{% endif %} w-100 mb-2">
+                            {{ name }}
+                        </a>
+                    </li>
+                {% endfor %}
             </ul>
         </div>
     </div>
 
     <div class="col-lg-9 col-md-8">
+
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Каталог: Усі Товари</h2>
+            <h2>
+                Каталог:
+                {% if current_category %}
+                    {{ categories|get_category_name:current_category }}
+                {% else %}
+                    Усі Товари
+                {% endif %}
+            </h2>
+
             <form method="GET" action="{% url 'store' %}" class="d-flex align-items-center">
-                <input type="hidden" name="category" value="{{ current_category }}">
-                <input type="hidden" name="price_min" value="{{ price_min }}">
-                <input type="hidden" name="price_max" value="{{ price_max }}">
-                <label for="sort" class="me-2 text-muted">Сортувати:</label>
+                {% csrf_token %}
+                <input type="hidden" name="category" value="{{ current_category|default:'' }}">
+                <input type="hidden" name="price_min" value="{{ price_min|default:'' }}">
+                <input type="hidden" name="price_max" value="{{ price_max|default:'' }}">
+                <input type="hidden" name="q" value="{{ search_query|default:'' }}">
+
+                <label for="sort" class="me-2 text-muted" style="font-size: 0.9em;">Сортувати:</label>
                 <select name="sort_by" id="sort" onchange="this.form.submit()" class="form-select form-select-sm">
-                    <option value="-id">Новизною</option>
-                    <option value="price">Ціна зростання</option>
-                    <option value="-price">Ціна спадання</option>
-                    <option value="name">Назва А-Я</option>
+                    <option value="-id" {% if sort_by == '-id' or not sort_by %}selected{% endif %}>Новизною</option>
+                    <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Ціною (зростання)</option>
+                    <option value="-price" {% if sort_by == '-price' %}selected{% endif %}>Ціною (спадання)</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Назвою (А-Я)</option>
                 </select>
             </form>
         </div>
 
+
         <div class="product-grid">
             {% for product in products %}
-            <div class="product-card">
-                <img class="card-img-top" src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x280{% endif %}" alt="{{ product.name }}">
+            <div class="product-card" data-id="{{ product.id }}">
+
+                <img class="card-img-top"
+                     src="{% if product.image %} {{ product.image.url }} {% else %} {% static 'store/img/placeholder.png' %} {% endif %}"
+                     alt="{{ product.name }}">
+
+                <div class="product-tooltip">
+                    <p class="tooltip-title">{{ product.name }}</p>
+                    <p class="tooltip-description">{{ product.description }}</p>
+                    <span class="tooltip-arrow"></span>
+                </div>
+
                 <div class="card-body">
                     <h4 class="card-title">{{ product.name }}</h4>
-                    <p class="card-text text-muted">{{ product.description }}</p>
+                    <p class="card-text text-muted">{{ product.description|slice:":50" }}...</p>
                     <div class="card-footer">
-                        <span class="price">{{ product.price }} ₴</span>
-                        <button class="btn btn-sm btn-success update-cart" data-product="{{ product.id }}" data-action="add">Додати</button>
+                        <span class="price">{{ product.price|floatformat:2 }} ₴</span>
+                        <button class="btn btn-sm btn-success update-cart" data-product="{{ product.id }}" data-action="add">Додати в кошик</button>
                     </div>
                 </div>
             </div>
             {% empty %}
             <div class="col-12">
-                <div class="alert alert-info">Товарів не знайдено</div>
+                <div class="alert alert-info mt-5" style="text-align: center;">Товарів не знайдено за вашими критеріями. Спробуйте змінити фільтри.</div>
             </div>
             {% endfor %}
         </div>
