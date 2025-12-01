@@ -47,21 +47,39 @@ def home(request):
 
 
 def store(request):
-    # Отримуємо параметр для фільтрації за категорією
+    # Отримуємо параметри для фільтрації та сортування
     category_slug = request.GET.get('category')
-    # Отримуємо параметр для пошукового запиту
     search_query = request.GET.get('q')
+
+    # ПАРАМЕТРИ СОРТУВАННЯ ТА ФІЛЬТРАЦІЇ
+    sort_by = request.GET.get('sort_by', '-id')  # За замовчуванням: новіші товари
+    price_min = request.GET.get('price_min')
+    price_max = request.GET.get('price_max')
 
     products = Product.objects.all()
 
     # 1. ФІЛЬТРАЦІЯ ЗА ПОШУКОВИМ ЗАПИТОМ
     if search_query:
-        # filter(name__icontains=...) шукає входження запиту в назві (без урахування регістру)
         products = products.filter(name__icontains=search_query)
 
-    # 2. ФІЛЬТРАЦІЯ ЗА КАТЕГОРІЄЮ (якщо пошуковий запит був порожнім або застосовується додатково)
+        # 2. ФІЛЬТРАЦІЯ ЗА КАТЕГОРІЄЮ
     if category_slug:
         products = products.filter(category=category_slug)
+
+    # 3. ФІЛЬТРАЦІЯ ЗА ДІАПАЗОНОМ ЦІН
+    filter_params = {}
+    if price_min:
+        # __gte означає "більше або дорівнює" (Greater Than or Equal to)
+        filter_params['price__gte'] = price_min
+    if price_max:
+        # __lte означає "менше або дорівнює" (Less Than or Equal to)
+        filter_params['price__lte'] = price_max
+
+    if filter_params:
+        products = products.filter(**filter_params)
+
+    # 4. СОРТУВАННЯ (застосовується до відфільтрованого списку)
+    products = products.order_by(sort_by)
 
     order = get_or_create_cart(request)
     cart_items = order.get_cart_items
@@ -71,7 +89,12 @@ def store(request):
         'cart_items': cart_items,
         'categories': Product.CATEGORY_CHOICES,
         'current_category': category_slug,
-        'search_query': search_query # Передаємо запит назад у шаблон
+        'search_query': search_query,
+
+        # НОВІ ПАРАМЕТРИ ДЛЯ ЗБЕРЕЖЕННЯ СТАНУ ФІЛЬТРА В ШАБЛОНІ
+        'sort_by': sort_by,
+        'price_min': price_min,
+        'price_max': price_max,
     }
     return render(request, 'store/catalog.html', context)
 

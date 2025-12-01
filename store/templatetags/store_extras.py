@@ -1,19 +1,19 @@
 from django import template
-from store.models import Product # Можливо, цей імпорт не потрібен, якщо категорія береться з контексту
+from ..models import Product  # Відносний імпорт
 
 register = template.Library()
 
 @register.filter
-def get_category_name(choices_list, key):
+def get_category_name(categories, slug):
     """
-    Повертає повну назву категорії за її коротким кодом (slug).
+    Повертає повну назву категорії за slug.
     Використання: {{ categories|get_category_name:current_category }}
     """
-    # choices_list - це Product.CATEGORY_CHOICES, який є списком кортежів
-    if not choices_list or not key:
+    if not categories or not slug:
         return "Усі товари"
 
-    for slug, name in choices_list:
-        if slug == key:
-            return name
+    for cat_slug, cat_name in categories:
+        if cat_slug == slug:
+            return cat_name
+
     return "Невідома категорія"

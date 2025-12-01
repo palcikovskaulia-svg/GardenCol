@@ -781,3 +781,20 @@ textarea.form-input {
 .viber-btn {
     background-color: #7360F2;
 }
+
+/* --- СТИЛІ ДЛЯ СОРТУВАННЯ ТА ФІЛЬТРІВ --- */
+.form-select, .form-control {
+    border-radius: 8px;
+    border-color: #e0e0e0;
+    transition: border-color 0.2s;
+}
+
+.form-select:focus, .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.1);
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.form-select-sm {
+    padding: 5px 10px;
+}
