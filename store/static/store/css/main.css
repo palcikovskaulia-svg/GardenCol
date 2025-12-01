@@ -106,7 +106,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 2000;
     padding: 20px 0;
     transition: var(--transition);
     background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
@@ -593,6 +593,8 @@ body {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
+    position: relative; /* Щоб z-index працював коректно */
+    z-index: 10; /* Низький z-index */
 }
 
 .reasons-section {

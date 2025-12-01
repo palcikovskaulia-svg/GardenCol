@@ -5,6 +5,7 @@
 
 {% block content %}
 <div class="row mt-4 catalog-page">
+
     <div class="col-12 mb-3 d-lg-none">
         <h3 class="text-center text-success">
             {% if current_category %}
@@ -25,7 +26,6 @@
                 <input type="hidden" name="category" value="{{ current_category|default:'' }}">
                 <input type="hidden" name="q" value="{{ search_query|default:'' }}">
                 <input type="hidden" name="sort_by" value="{{ sort_by|default:'-id' }}">
-
 
                 <div class="mb-3">
                     <label class="form-label small text-muted">Мін. ціна (₴)</label>
@@ -112,6 +112,7 @@
                 <div class="card-body">
                     <h4 class="card-title">{{ product.name }}</h4>
                     <p class="card-text text-muted">{{ product.description|slice:":50" }}...</p>
+
                     <div class="card-footer">
                         <span class="price">{{ product.price|floatformat:2 }} ₴</span>
                         <button class="btn btn-sm btn-success update-cart" data-product="{{ product.id }}" data-action="add">Додати в кошик</button>
