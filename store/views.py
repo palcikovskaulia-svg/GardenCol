@@ -2,24 +2,54 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from .models import Product, Order, OrderItem
+from django.db.models import Sum  # Додано для оптимізації
+
+# КЛЮЧ У СЕСІЇ ДЛЯ ЗБЕРІГАННЯ ID ОБ'ЄКТА ORDER
+CART_SESSION_KEY = 'order_id'
 
 
-# Тимчасова функція для імітації кошика гостя
 def get_or_create_cart(request):
+    """
+    Отримує або створює об'єкт Order (кошик) на основі ID, збереженого в сесії.
+    Це забезпечує, що кошик прив'язаний до пристрою/сесії, а не до фіксованого запису "Guest".
+    """
+
+    # 1. Спробуйте отримати ID кошика з поточної сесії
+    order_id = request.session.get(CART_SESSION_KEY)
+
     try:
-        order = Order.objects.get(complete=False, customer='Guest')
+        # 2. Якщо ID є, спробуйте завантажити об'єкт Order з бази даних
+        if order_id:
+            # pk=order_id є еквівалентом id=order_id
+            order = Order.objects.get(pk=order_id, complete=False)
+        else:
+            # 3. Якщо ID немає (нова сесія/новий пристрій), створіть новий об'єкт
+            order = Order.objects.create(complete=False, customer='Session Guest')
+            # Збережіть ID нового об'єкта у сесії
+            request.session[CART_SESSION_KEY] = order.pk
+            request.session.modified = True
+
     except Order.DoesNotExist:
-        order = Order.objects.create(complete=False, customer='Guest')
+        # 4. Якщо об'єкт Order з цим ID був видалений з бази (або помилка), створити новий
+        order = Order.objects.create(complete=False, customer='Session Guest')
+        request.session[CART_SESSION_KEY] = order.pk
+        request.session.modified = True
+
     return order
+
+
+# =========================================================================
+# 1. ОСНОВНІ VIEWS (ЗМІНЮВАТИ НЕ ПОТРІБНО, вони викликають нову get_or_create_cart)
+# =========================================================================
 
 def home(request):
     order = get_or_create_cart(request)
     cart_items = order.get_cart_items
-    # Отримуємо всі доступні категорії для меню
     categories = Product.CATEGORY_CHOICES
-    # Отримуємо 6 нових товарів для банера
     latest_products = Product.objects.all().order_by('-id')[:6]
-    return render(request, 'store/home.html', {'cart_items': cart_items, 'latest_products': latest_products, 'categories': categories})
+    return render(request, 'store/home.html',
+                  {'cart_items': cart_items, 'latest_products': latest_products, 'categories': categories})
+
 
 def store(request):
     category_slug = request.GET.get('category')
@@ -35,27 +65,35 @@ def store(request):
     context = {
         'products': products,
         'cart_items': cart_items,
-        'categories': Product.CATEGORY_CHOICES, # Передаємо категорії
-        'current_category': category_slug # Передаємо поточну активну категорію
+        'categories': Product.CATEGORY_CHOICES,
+        'current_category': category_slug
     }
     return render(request, 'store/catalog.html', context)
 
 
-# Заглушки для інших сторінок (додаємо категорії для навігації)
+# Заглушки для інших сторінок (викликають нову get_or_create_cart)
 def about(request):
     order = get_or_create_cart(request)
-    return render(request, 'store/about.html', {'cart_items': order.get_cart_items, 'categories': Product.CATEGORY_CHOICES})
+    return render(request, 'store/about.html',
+                  {'cart_items': order.get_cart_items, 'categories': Product.CATEGORY_CHOICES})
+
 
 def blog(request):
     order = get_or_create_cart(request)
-    return render(request, 'store/blog.html', {'cart_items': order.get_cart_items, 'categories': Product.CATEGORY_CHOICES})
+    return render(request, 'store/blog.html',
+                  {'cart_items': order.get_cart_items, 'categories': Product.CATEGORY_CHOICES})
+
 
 def contact(request):
     order = get_or_create_cart(request)
-    return render(request, 'store/contact.html', {'cart_items': order.get_cart_items, 'categories': Product.CATEGORY_CHOICES})
+    return render(request, 'store/contact.html',
+                  {'cart_items': order.get_cart_items, 'categories': Product.CATEGORY_CHOICES})
 
 
-# Сторінка кошика
+# =========================================================================
+# 2. ФУНКЦІОНАЛЬНІ VIEWS (ЗМІНЮВАТИ НЕ ПОТРІБНО)
+# =========================================================================
+
 def cart(request):
     order = get_or_create_cart(request)
     items = order.orderitem_set.all()
@@ -66,7 +104,6 @@ def cart(request):
     return render(request, 'store/cart.html', context)
 
 
-# Сторінка оформлення
 def checkout(request):
     order = get_or_create_cart(request)
     items = order.orderitem_set.all()
