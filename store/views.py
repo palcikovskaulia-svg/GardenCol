@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect  # Додано 'redirect'
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import json
 # Переконайтеся, що імпортуємо ShippingAddress
 from .models import Product, Order, OrderItem, ShippingAddress
 from django.db.models import Sum
+from django.db import transaction  # Додаємо для надійної обробки замовлення
 
 # КЛЮЧ У СЕСІЇ ДЛЯ ЗБЕРІГАННЯ ID ОБ'ЄКТА ORDER
 CART_SESSION_KEY = 'order_id'
@@ -106,33 +107,37 @@ def checkout(request):
     if request.method == 'POST':
         data = request.POST
 
-        # Перевірка: Якщо кошик порожній, повертаємось на каталог
+        # 1. Перевірка: Якщо кошик порожній, повертаємось на каталог
         if cart_items == 0:
             return redirect('store')
 
-        # === ЛОГІКА ОФОРМЛЕННЯ ЗАМОВЛЕННЯ (ВИКОНУЄТЬСЯ, ЯКЩО CART_ITEMS > 0) ===
-
-        # 1. Завершення замовлення (Order)
-        order.complete = True
-        order.save()
-
-        # 2. Створення адреси доставки
+        # === КРИТИЧНИЙ БЛОК: Запобігаємо частковому збереженню за допомогою транзакції ===
         try:
-            ShippingAddress.objects.create(
-                order=order,
-                address=data.get('address', ''),
-                city=data.get('city', ''),
-                # Тепер поле 'state' у вас є в HTML
-                state=data.get('state', ''),
-                zipcode=data.get('zipcode', ''),
-            )
-        except Exception as e:
-            # Якщо виникла помилка під час збереження адреси, логуємо її
-            print(f"Error creating shipping address: {e}")
-            # Можна повернути помилку, або відкотити order.complete = False
-            return render(request, 'store/error.html', {'message': 'Помилка збереження адреси'})
+            with transaction.atomic():
+                # 2. Завершення замовлення (Order)
+                order.complete = True
+                order.save()
 
-        # 3. Перенаправлення на сторінку підтвердження
+                # 3. Створення адреси доставки
+                ShippingAddress.objects.create(
+                    order=order,
+                    address=data.get('address', ''),
+                    city=data.get('city', ''),
+                    # Використовуємо .get() і очікуємо, що це поле є в моделі/формі
+                    state=data.get('state', ''),
+                    zipcode=data.get('zipcode', ''),
+                )
+
+        except Exception as e:
+            # Якщо виникла помилка DB (наприклад, не виконана міграція), відкочуємо зміни
+            print(f"CRITICAL ERROR during checkout processing: {e}")
+            # Відкочуємо статус Order, якщо він був змінений у try блоці
+            order.complete = False
+            order.save()
+            # Перенаправляємо користувача назад на checkout
+            return redirect('checkout')  # Повертаємо, щоб він спробував знову
+
+        # 4. Перенаправлення на сторінку підтвердження
         return redirect('checkout_success', order_id=order.id)
 
     # ОБРОБКА GET-ЗАПИТУ (відображення сторінки)
@@ -154,6 +159,7 @@ def checkout_success(request, order_id):
 
     try:
         order = Order.objects.get(id=order_id)
+
         # Очищаємо сесію, щоб кошик був порожнім після завершення замовлення
         if CART_SESSION_KEY in request.session:
             del request.session[CART_SESSION_KEY]
