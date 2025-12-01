@@ -8,34 +8,36 @@
 <div class="row">
     <div class="col-lg-6">
         <div class="box-element p-4 shadow-sm">
-            <h5>Контактні дані</h5>
+            <h5>Контактні дані та Доставка</h5>
             <hr>
-            <form id="shipping-form">
+
+            <form method="POST" action="{% url 'checkout' %}">
+                {% csrf_token %}
+
                 <div class="mb-3">
-                    <input class="form-control" type="text" id="name" required placeholder="Ім'я та Прізвище">
+                    <input class="form-control" type="text" name="name" required placeholder="Ім'я та Прізвище">
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="email" id="email" required placeholder="Email">
+                    <input class="form-control" type="email" name="email" required placeholder="Email">
                 </div>
 
                 <hr>
-                <h5>Адреса Доставки</h5>
+
                 <div class="mb-3">
-                    <input class="form-control" type="text" id="city" required placeholder="Місто">
+                    <input class="form-control" type="text" name="city" required placeholder="Місто">
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="text" id="address" required placeholder="Вулиця та номер будинку">
+                    <input class="form-control" type="text" name="address" required placeholder="Вулиця та номер будинку">
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="text" id="zipcode" required placeholder="Поштовий індекс">
+                    <input class="form-control" type="text" name="zipcode" required placeholder="Поштовий індекс">
                 </div>
-                
                 <hr>
                 <div class="d-grid">
-                    <button type="submit" id="form-button" class="btn btn-success">Підтвердити замовлення</button>
+                    <button type="submit" class="btn btn-success">Підтвердити замовлення</button>
                 </div>
             </form>
-        </div>
+            </div>
     </div>
 
     <div class="col-lg-6">
@@ -48,7 +50,7 @@
                     <span class="me-3">{{ item.product.name }}</span>
                 </div>
                 <span class="text-end">
-                    Кіл.: {{ item.quantity }} x ${{ item.product.price|floatformat:2 }} = **${{ item.get_total|floatformat:2 }}**
+                    Кіл.: {{ item.quantity }} x {{ item.product.price|floatformat:2 }} ₴ = **{{ item.get_total|floatformat:2 }} ₴**
                 </span>
             </div>
             {% endfor %}
@@ -60,7 +62,7 @@
             </div>
             <div class="d-flex justify-content-between fs-4 fw-bold text-success">
                 <p>Загальна сума:</p>
-                <p>${{ cart_total|floatformat:2 }}</p>
+                <p>{{ cart_total|floatformat:2 }} ₴</p>
             </div>
         </div>
     </div>
