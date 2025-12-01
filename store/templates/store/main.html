@@ -14,54 +14,42 @@
     <link rel="stylesheet" type="text/css" href="{% static 'store/css/main.css' %}">
 </head>
 <body>
-   <header class="header header-transparent">
-    <div class="container">
-        <h1 class="logo"><a href="{% url 'home' %}">GardenCol 🌱</a></h1>
+    <header class="header header-transparent">
+        <div class="container">
+            <h1 class="logo"><a href="{% url 'home' %}">GardenCol 🌱</a></h1>
 
-        <nav class="nav">
-            <ul>
-                <li><a href="{% url 'home' %}">Головна</a></li>
+            <nav class="nav">
+                <ul>
+                    <li><a href="{% url 'home' %}">Головна</a></li>
 
-                <li class="dropdown">
-                    <a href="{% url 'store' %}" class="dropbtn">Каталог <i class="fas fa-caret-down"></i></a>
+                    <li class="dropdown">
+                        <a href="{% url 'store' %}" class="dropbtn">Каталог <i class="fas fa-caret-down"></i></a>
+                        <div class="dropdown-content">
+                            {% for slug, name in categories %}
+                                <a href="{% url 'store' %}?category={{ slug }}">{{ name }}</a>
+                            {% endfor %}
+                            <a href="{% url 'store' %}">Усі товари</a>
+                        </div>
+                    </li>
 
-                    <div class="dropdown-content">
-                        {% for slug, name in categories %}
-                            <a href="{% url 'store' %}?category={{ slug }}">{{ name }}</a>
-                        {% endfor %}
-                        <a href="{% url 'store' %}">Усі товари</a>
-                    </div>
-                </li>
+                    <li><a href="{% url 'about' %}">Про нас</a></li>
+                    <li><a href="{% url 'blog' %}">Блог</a></li>
+                    <li><a href="{% url 'contact' %}">Контакти</a></li>
+                </ul>
+            </nav>
 
-                <li><a href="{% url 'about' %}">Про нас</a></li>
-                <li><a href="{% url 'blog' %}">Блог</a></li>
-                <li><a href="{% url 'contact' %}">Контакти</a></li>
-            </ul>
-        </nav>
-        <header class="header header-transparent">
-             <div class="container">
-                 <nav class="nav">
+            <form method="GET" action="{% url 'store' %}" class="search-form">
+                <input type="text" name="q" placeholder="Пошук товарів..." class="search-input"
+                       value="{{ search_query|default:'' }}">
+                <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+            </form>
 
-                 </nav>
-
-        <form method="GET" action="{% url 'store' %}" class="search-form">
-            <input type="text" name="q" placeholder="Пошук товарів..." class="search-input"
-                   value="{{ search_query|default:'' }}">
-            <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
-        </form>
-
-        <a href="{% url 'cart' %}" class="cart-icon">
+            <a href="{% url 'cart' %}" class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count" class="badge">{{ cart_items }}</span>
             </a>
         </div>
-        </header>
-
-        <a href="{% url 'cart' %}" class="cart-icon">
-            <i class="fas fa-shopping-cart"></i>
-            <span id="cart-count" class="badge">{{ cart_items }}</span>
-        </a>
-
-    </div>
-</header>
+    </header>
 
     <div class="container" style="padding-top: 20px;">
         {% block content %}
