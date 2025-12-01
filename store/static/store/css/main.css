@@ -207,6 +207,47 @@ body {
     font-size: 0.7rem;
     font-weight: 700;
 }
+/* --- СТИЛІ ДЛЯ ФОРМИ ПОШУКУ --- */
+.search-form {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2); /* Напівпрозорий фон */
+    border-radius: 20px;
+    padding: 3px;
+    margin: 0 20px;
+    flex-grow: 0.5; /* Займає частину простору */
+    max-width: 300px;
+}
+
+.search-input {
+    background: none;
+    border: none;
+    padding: 8px 15px;
+    color: white;
+    font-size: 0.9em;
+    width: 100%;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.search-button:hover {
+    color: #4CAF50;
+}
 
 /* Dropdown */
 .dropdown {

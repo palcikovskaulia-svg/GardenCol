@@ -102,7 +102,3 @@ class ProductAdmin(admin.ModelAdmin):
         return ""
 
     thumbnail.short_description = 'Прев\'ю'
-
-# ShippingAddress не реєструємо окремо, бо воно inlined у Order
-# admin.site.register(ShippingAddress)
-# admin.site.register(OrderItem) # Не реєструємо, бо воно inlined

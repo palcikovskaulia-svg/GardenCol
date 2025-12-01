@@ -38,6 +38,22 @@
                 <li><a href="{% url 'contact' %}">Контакти</a></li>
             </ul>
         </nav>
+        <header class="header header-transparent">
+             <div class="container">
+                 <nav class="nav">
+
+                 </nav>
+
+        <form method="GET" action="{% url 'store' %}" class="search-form">
+            <input type="text" name="q" placeholder="Пошук товарів..." class="search-input"
+                   value="{{ search_query|default:'' }}">
+            <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+        </form>
+
+        <a href="{% url 'cart' %}" class="cart-icon">
+            </a>
+        </div>
+        </header>
 
         <a href="{% url 'cart' %}" class="cart-icon">
             <i class="fas fa-shopping-cart"></i>

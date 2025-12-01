@@ -47,12 +47,21 @@ def home(request):
 
 
 def store(request):
+    # Отримуємо параметр для фільтрації за категорією
     category_slug = request.GET.get('category')
+    # Отримуємо параметр для пошукового запиту
+    search_query = request.GET.get('q')
 
+    products = Product.objects.all()
+
+    # 1. ФІЛЬТРАЦІЯ ЗА ПОШУКОВИМ ЗАПИТОМ
+    if search_query:
+        # filter(name__icontains=...) шукає входження запиту в назві (без урахування регістру)
+        products = products.filter(name__icontains=search_query)
+
+    # 2. ФІЛЬТРАЦІЯ ЗА КАТЕГОРІЄЮ (якщо пошуковий запит був порожнім або застосовується додатково)
     if category_slug:
-        products = Product.objects.filter(category=category_slug)
-    else:
-        products = Product.objects.all()
+        products = products.filter(category=category_slug)
 
     order = get_or_create_cart(request)
     cart_items = order.get_cart_items
@@ -61,7 +70,8 @@ def store(request):
         'products': products,
         'cart_items': cart_items,
         'categories': Product.CATEGORY_CHOICES,
-        'current_category': category_slug
+        'current_category': category_slug,
+        'search_query': search_query # Передаємо запит назад у шаблон
     }
     return render(request, 'store/catalog.html', context)
 
