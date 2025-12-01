@@ -1,0 +1,36 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block title %}Замовлення прийнято!{% endblock %}
+
+{% block content %}
+<section class="section container">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="box-element text-center p-5 mt-5">
+                
+                <h1 class="text-success" style="font-size: 3em; margin-bottom: 20px;">
+                    🎉 Замовлення Успішно Оформлено!
+                </h1>
+                
+                <p class="lead mb-4">Дякуємо, що обрали GardenCol!</p>
+                
+                <hr style="margin: 30px auto; width: 60%;">
+                
+                <h4 class="text-secondary mb-3">Деталі вашого замовлення:</h4>
+                <p style="font-size: 1.2em;">
+                    Номер замовлення: **#{{ order_id }}**
+                </p>
+                <p style="font-size: 1.2em;">
+                    Загальна сума: **{{ order_total|floatformat:2 }} грн.**
+                </p>
+                
+                <p class="mt-4">Наш менеджер зв'яжеться з вами найближчим часом для підтвердження деталей доставки.</p>
+                
+                <div class="mt-5">
+                    <a href="{% url 'store' %}" class="btn btn-success">Продовжити покупки</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
