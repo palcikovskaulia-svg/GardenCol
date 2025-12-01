@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect  # Додано 'redirect'
 from django.http import JsonResponse
 import json
-from .models import Product, Order, OrderItem
-from django.db.models import Sum  # Додано для оптимізації
+# Переконайтеся, що імпортуємо ShippingAddress
+from .models import Product, Order, OrderItem, ShippingAddress
+from django.db.models import Sum
 
 # КЛЮЧ У СЕСІЇ ДЛЯ ЗБЕРІГАННЯ ID ОБ'ЄКТА ORDER
 CART_SESSION_KEY = 'order_id'
@@ -11,26 +12,19 @@ CART_SESSION_KEY = 'order_id'
 def get_or_create_cart(request):
     """
     Отримує або створює об'єкт Order (кошик) на основі ID, збереженого в сесії.
-    Це забезпечує, що кошик прив'язаний до пристрою/сесії, а не до фіксованого запису "Guest".
+    Це забезпечує, що кошик прив'язаний до пристрою/сесії.
     """
-
-    # 1. Спробуйте отримати ID кошика з поточної сесії
     order_id = request.session.get(CART_SESSION_KEY)
 
     try:
-        # 2. Якщо ID є, спробуйте завантажити об'єкт Order з бази даних
         if order_id:
-            # pk=order_id є еквівалентом id=order_id
             order = Order.objects.get(pk=order_id, complete=False)
         else:
-            # 3. Якщо ID немає (нова сесія/новий пристрій), створіть новий об'єкт
             order = Order.objects.create(complete=False, customer='Session Guest')
-            # Збережіть ID нового об'єкта у сесії
             request.session[CART_SESSION_KEY] = order.pk
             request.session.modified = True
 
     except Order.DoesNotExist:
-        # 4. Якщо об'єкт Order з цим ID був видалений з бази (або помилка), створити новий
         order = Order.objects.create(complete=False, customer='Session Guest')
         request.session[CART_SESSION_KEY] = order.pk
         request.session.modified = True
@@ -39,7 +33,7 @@ def get_or_create_cart(request):
 
 
 # =========================================================================
-# 1. ОСНОВНІ VIEWS (ЗМІНЮВАТИ НЕ ПОТРІБНО, вони викликають нову get_or_create_cart)
+# 1. ОСНОВНІ VIEWS (Відображення сторінок)
 # =========================================================================
 
 def home(request):
@@ -71,7 +65,7 @@ def store(request):
     return render(request, 'store/catalog.html', context)
 
 
-# Заглушки для інших сторінок (викликають нову get_or_create_cart)
+# Заглушки для інших сторінок
 def about(request):
     order = get_or_create_cart(request)
     return render(request, 'store/about.html',
@@ -91,7 +85,7 @@ def contact(request):
 
 
 # =========================================================================
-# 2. ФУНКЦІОНАЛЬНІ VIEWS (ЗМІНЮВАТИ НЕ ПОТРІБНО)
+# 2. ФУНКЦІОНАЛЬНІ VIEWS (Кошик та Оформлення)
 # =========================================================================
 
 def cart(request):
@@ -106,12 +100,69 @@ def cart(request):
 
 def checkout(request):
     order = get_or_create_cart(request)
-    items = order.orderitem_set.all()
-    cart_total = order.get_cart_total
     cart_items = order.get_cart_items
 
-    context = {'items': items, 'order': order, 'cart_items': cart_items, 'cart_total': cart_total}
+    # ОБРОБКА ФОРМИ ЗАМОВЛЕННЯ
+    if request.method == 'POST':
+        data = request.POST
+
+        # Перевірка, щоб не обробляти порожній кошик
+        if cart_items == 0:
+            return redirect('store')
+
+            # 1. Завершення замовлення (Order)
+        order.complete = True
+        order.save()
+
+        # 2. Створення адреси доставки
+        ShippingAddress.objects.create(
+            order=order,
+            # Використовуйте імена полів з вашої форми checkout.html:
+            address=data['address'],
+            city=data['city'],
+            # state - часто не використовується в Україні, можна замінити на 'region' або залишити
+            state=data.get('state', ''),
+            zipcode=data['zipcode'],
+        )
+
+        # 3. Перенаправлення на сторінку підтвердження
+        return redirect('checkout_success', order_id=order.id)
+
+    # ОБРОБКА GET-ЗАПИТУ (відображення сторінки)
+    items = order.orderitem_set.all()
+    cart_total = order.get_cart_total
+
+    context = {
+        'items': items,
+        'order': order,
+        'cart_items': cart_items,
+        'cart_total': cart_total
+    }
     return render(request, 'store/checkout.html', context)
+
+
+# НОВА ФУНКЦІЯ: Сторінка підтвердження замовлення
+def checkout_success(request, order_id):
+    """Відображає повідомлення про успішне оформлення замовлення."""
+
+    try:
+        order = Order.objects.get(id=order_id)
+        # Очищаємо сесію, щоб кошик був порожнім після завершення замовлення
+        if CART_SESSION_KEY in request.session:
+            del request.session[CART_SESSION_KEY]
+            request.session.modified = True
+
+    except Order.DoesNotExist:
+        return redirect('home')
+
+    context = {
+        'order_id': order.id,
+        'order_total': order.get_cart_total,
+        'categories': Product.CATEGORY_CHOICES,
+        # Очищений кошик
+        'cart_items': 0
+    }
+    return render(request, 'store/checkout_success.html', context)
 
 
 # ФУНКЦІЯ ОБРОБКИ AJAX
