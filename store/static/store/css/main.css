@@ -730,3 +730,36 @@ textarea.form-input {
         transform: translateY(0);
     }
 }
+
+/* =========================================================
+   7. КНОПКА ШВИДКОГО ЗВ'ЯЗКУ (FLOATING CONTACT BUTTON)
+   ========================================================= */
+
+.floating-contact-btn {
+    /* Фіксоване позиціонування */
+    position: fixed;
+    bottom: 30px; /* Відступ від низу */
+    right: 30px; /* Відступ справа */
+    z-index: 900; /* Переконайтеся, що кнопка знаходиться над іншими елементами */
+
+    /* Стилізація */
+    background-color: #2e7d32; /* Глибокий зелений */
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%; /* Кругла форма */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+
+    /* Анімація та тінь */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.floating-contact-btn:hover {
+    background-color: #1b5e20; /* Темніший колір при наведенні */
+    transform: scale(1.1) rotate(5deg); /* Легке збільшення та обертання */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
