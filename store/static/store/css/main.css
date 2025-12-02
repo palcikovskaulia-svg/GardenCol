@@ -109,7 +109,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 2000;
     padding: 20px 0;
     transition: var(--transition);
     background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
@@ -500,14 +500,23 @@ body {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    line-height: 1.5em;
+    transition: max-height 1s ease, padding 0.5s ease, background 0.5s ease;
 }
 
 /* КАТАЛОГ - показати ПОВНИЙ опис при hover */
 .catalog-page .product-card:hover .card-text {
-    max-height: none;
+    max-height: 1000px; /* Великe значення для плавності */
     overflow: visible;
     -webkit-line-clamp: unset;
     display: block;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 100;
 }
 
 .product-card::before {
@@ -524,12 +533,13 @@ body {
     transition: var(--transition);
     pointer-events: none;
     z-index: 0;
+
 }
 
 .product-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
-    z-index: 50;
+    z-index: 100; /*50*/
     overflow: visible;
 }
 

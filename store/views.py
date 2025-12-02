@@ -50,9 +50,7 @@ def store(request):
     # Отримуємо параметри для фільтрації та сортування
     category_slug = request.GET.get('category')
     search_query = request.GET.get('q')
-
-    # ПАРАМЕТРИ СОРТУВАННЯ ТА ФІЛЬТРАЦІЇ
-    sort_by = request.GET.get('sort_by', '-id')  # За замовчуванням: новіші товари
+    sort_by = request.GET.get('sort_by', '-id')
     price_min = request.GET.get('price_min')
     price_max = request.GET.get('price_max')
 
@@ -69,15 +67,22 @@ def store(request):
     # 3. ФІЛЬТРАЦІЯ ЗА ДІАПАЗОНОМ ЦІН
     filter_params = {}
 
-    # КРИТИЧНЕ ВИПРАВЛЕННЯ: Обробка порожніх рядків та конвертація у float
+    # КЛЮЧОВЕ ВИПРАВЛЕННЯ: Використовуємо strip() та try/except
     try:
+        # 1. Обробка Мінімуму
         if price_min and price_min.strip():
+            # Видаляємо пробіли та конвертуємо
             filter_params['price__gte'] = float(price_min.strip())
+
+        # 2. Обробка Максимуму
         if price_max and price_max.strip():
+            # Видаляємо пробіли та конвертуємо
             filter_params['price__lte'] = float(price_max.strip())
+
     except ValueError:
-        # Якщо користувач ввів не число (наприклад, літери), ігноруємо фільтрацію
+        # Якщо введено не число (наприклад, "abc")
         filter_params = {}
+        # Додайте повідомлення про помилку користувачеві, якщо DEBUG = True
 
     if filter_params:
         products = products.filter(**filter_params)
@@ -101,9 +106,6 @@ def store(request):
         'price_max': price_max if price_max else '',
     }
     return render(request, 'store/catalog.html', context)
-
-
-# ... (решта файлу залишається незмінною) ...
 
 
 # Заглушки для інших сторінок
