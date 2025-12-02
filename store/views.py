@@ -64,25 +64,21 @@ def store(request):
     if category_slug:
         products = products.filter(category=category_slug)
 
-    # 3. ФІЛЬТРАЦІЯ ЗА ДІАПАЗОНОМ ЦІН
+    # 3. ФІЛЬТРАЦІЯ ЗА ДІАПАЗОНОМ ЦІН (ОСТАТОЧНЕ ВИПРАВЛЕННЯ)
     filter_params = {}
 
-    # КЛЮЧОВЕ ВИПРАВЛЕННЯ: Використовуємо strip() та try/except
     try:
-        # 1. Обробка Мінімуму
+        # Обробка Мінімуму: перевіряємо, чи не порожнє поле, і конвертуємо у float
         if price_min and price_min.strip():
-            # Видаляємо пробіли та конвертуємо
             filter_params['price__gte'] = float(price_min.strip())
 
-        # 2. Обробка Максимуму
+        # Обробка Максимуму
         if price_max and price_max.strip():
-            # Видаляємо пробіли та конвертуємо
             filter_params['price__lte'] = float(price_max.strip())
 
     except ValueError:
-        # Якщо введено не число (наприклад, "abc")
+        # Якщо введено не число (наприклад, "abc"), ігноруємо фільтрацію ціни
         filter_params = {}
-        # Додайте повідомлення про помилку користувачеві, якщо DEBUG = True
 
     if filter_params:
         products = products.filter(**filter_params)
@@ -100,7 +96,7 @@ def store(request):
         'current_category': category_slug,
         'search_query': search_query,
 
-        # Повертаємо значення як рядок, щоб вони відображалися у формі
+        # Повертаємо значення, щоб вони відображалися у формі
         'sort_by': sort_by,
         'price_min': price_min if price_min else '',
         'price_max': price_max if price_max else '',
