@@ -62,18 +62,22 @@ def store(request):
     if search_query:
         products = products.filter(name__icontains=search_query)
 
-        # 2. ФІЛЬТРАЦІЯ ЗА КАТЕГОРІЄЮ
+    # 2. ФІЛЬТРАЦІЯ ЗА КАТЕГОРІЄЮ
     if category_slug:
         products = products.filter(category=category_slug)
 
     # 3. ФІЛЬТРАЦІЯ ЗА ДІАПАЗОНОМ ЦІН
     filter_params = {}
-    if price_min:
-        # __gte означає "більше або дорівнює" (Greater Than or Equal to)
-        filter_params['price__gte'] = price_min
-    if price_max:
-        # __lte означає "менше або дорівнює" (Less Than or Equal to)
-        filter_params['price__lte'] = price_max
+
+    # КРИТИЧНЕ ВИПРАВЛЕННЯ: Обробка порожніх рядків та конвертація у float
+    try:
+        if price_min and price_min.strip():
+            filter_params['price__gte'] = float(price_min.strip())
+        if price_max and price_max.strip():
+            filter_params['price__lte'] = float(price_max.strip())
+    except ValueError:
+        # Якщо користувач ввів не число (наприклад, літери), ігноруємо фільтрацію
+        filter_params = {}
 
     if filter_params:
         products = products.filter(**filter_params)
@@ -91,12 +95,15 @@ def store(request):
         'current_category': category_slug,
         'search_query': search_query,
 
-        # НОВІ ПАРАМЕТРИ ДЛЯ ЗБЕРЕЖЕННЯ СТАНУ ФІЛЬТРА В ШАБЛОНІ
+        # Повертаємо значення як рядок, щоб вони відображалися у формі
         'sort_by': sort_by,
-        'price_min': price_min,
-        'price_max': price_max,
+        'price_min': price_min if price_min else '',
+        'price_max': price_max if price_max else '',
     }
     return render(request, 'store/catalog.html', context)
+
+
+# ... (решта файлу залишається незмінною) ...
 
 
 # Заглушки для інших сторінок
